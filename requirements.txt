@@ -1,0 +1,4 @@
+BeautifulSoup
+nltk
+html2text
+goose-extractor
