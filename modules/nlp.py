@@ -205,3 +205,159 @@ def sorted_ngram_count(tokens,n=1):
     Output: List of 2-tuples with first element as token and second as their count
     """
     return sorted(ngram_count(tokens,n).items(),key=lambda x:x[1], reverse = True)
+
+
+
+################################################################################
+### NER
+################################################################################
+
+def merge_same_ner_tags(temp_array):
+    """ Merge tokens from the temp array into one token_tag tuple """
+    
+    merged_token = ' '.join(token_tag[0] for token_tag in temp_array)
+    merged_tag = tuple({token_tag[1] for token_tag in temp_array})
+    if len(merged_tag) != 1:
+        raise ValueError('Trying to merge tokens with different NER tags %s ' %str(temp_array))
+    return merged_token,merged_tag[0]
+
+def merge_ner_tags(text_ner_tags):
+    """ Combine adjacent tokens with same NER tag into one token"""
+    
+    merged_ner_tags = []
+    temp_array = []
+    prev_tag = 'O'
+    
+    for token_tag in text_ner_tags:
+        tag = token_tag[1]
+        
+        if tag == 'O':
+            # There can not be an continuity so empty the array and append the results to merged
+            if len(temp_array) != 0:
+                # Merge the contents
+                m_token,m_tag = merge_same_ner_tags(temp_array)
+                merged_ner_tags.append((m_token,m_tag))
+                #print temp_array,'!!!'
+                temp_array = []
+                
+            merged_ner_tags.append(token_tag)
+            prev_tag = tag
+            
+        elif prev_tag != 'O' and tag == prev_tag:
+            # continue the chain
+            temp_array.append(token_tag)
+            prev_tag = tag
+            
+            
+        else:
+            # current tag != 0 and prev_tag == 0 or tag != prev_tag
+            # Start of something new
+            if len(temp_array) != 0:
+                # Merge the contents
+                m_token,m_tag = merge_same_ner_tags(temp_array)
+                merged_ner_tags.append((m_token,m_tag))
+                #print temp_array,'!!!'
+                temp_array = []
+            
+            temp_array.append(token_tag)
+            prev_tag = tag
+            
+            
+    if len(temp_array) != 0:
+        merged_token = ' '.join(token_tag[0] for token_tag in temp_array)
+        merged_tag = tuple({token_tag[1] for token_tag in temp_array})[0]
+        merged_token_tag = (merged_token,merged_tag)
+        merged_ner_tags.append(merged_token_tag)
+    
+    return merged_ner_tags
+
+
+def reduce_tokens(tokens):
+    """ Look at the tokens with the same NER tag and merge them if they are 'similar'
+    
+    Current definitions of similarity
+        Compare the tag with every other tag and if the first tag is a part of a bigger tag
+        Then they are probably referring to the same thing, so replace the smaller one by the bigger one
+        
+    input : list of tokens which have the same NER tag
+    Output: list of reduced tokens
+    
+    TODO : | DONE | Add Abbreviation to similarity thing 
+    """
+    new_tokens = []
+    for token in tokens:
+        flag = 0 
+        for other_token in sorted(tokens,key = lambda x:len(x), reverse = True):
+            if compare_tokens(token,other_token):
+                new_tokens.append(other_token)
+                flag = 1
+                break
+        if flag != 1:
+            new_tokens.append(token)
+
+    return new_tokens
+
+def compare_tokens(token,other_token):
+    """ Compare two tokens to see if they are similar or not
+    
+    TODO : Extend this function ton include external sources of data like common abbreviaton databases
+        maybe look at https://en.wikipedia.org/wiki/Lists_of_abbreviations
+    """
+    return ((token in other_token
+                    and len(other_token) > len(token)
+                    and "'s" not in other_token
+                    and "of" not in other_token)
+                or ("The" in other_token 
+                    and token in other_token.replace("The",' ')
+                   )
+                or (token in get_abbr(other_token))
+           )
+
+def get_abbr(st):
+    """ Generate an abbreviation of the passed string by some rule and return it 
+    
+    
+    input : string 
+    output: set of possible abbreviations
+    
+    Current method of abbr:
+        Pick up first leter of every word
+        Capitalize it
+            1. One abbr would have it as U.S.
+            2. Another abbr would be as US
+    
+    Thus you cannot abbreviate single word strings
+    
+    TODO : Use some library/regex thingy to obtain abbreviations faster
+    """
+    words = st.replace('The','').replace('of','').replace('&','').split()
+    if len(words) < 2:
+        return {}
+    
+    first_letters = [word[0].capitalize() for word in words]
+    
+    abbr_1 = '.'.join(first_letters)+'.'
+    abbr_2 = ''.join(first_letters)
+    
+    return {abbr_1,abbr_2}
+
+
+
+
+def entity_count(text):
+    """ Identify and count the number of times an entity appears in some text 
+    
+    Given a piece of text, return a dictionary with keys as the entity_type 
+    (ORGANIZATION,LOCATION,PERSON) and values as a dictionary with keys as entity tokens and values as their counts
+    
+    input : string text
+    output: dictionary
+
+    """
+    text_ner_tags = ner_tag(text)
+    tagged_entities = [tag for tag in merge_ner_tags(text_ner_tags) if tag[1] != 'O']
+    tag_dict = {tag:[x[0] for x in tagged_entities if x[1] == tag] for tag in {x[1] for x in tagged_entities}}
+    tag_dict = {tag:reduce_tokens(tag_dict[tag]) for tag in tag_dict}
+    tag_entity_count_dict = {tag:{token[0]:count for token,count in ngram_count(tag_dict[tag]).items()} for tag in tag_dict}
+    
+    return tag_entity_count_dict
