@@ -1,3 +1,5 @@
+from goose import Goose
+
 class Webpage:
     """ The core Webpage Class 
     
@@ -100,3 +102,16 @@ class Webpage:
             raise ValueError("goose article not initialized, use webpage.load() to initialize it")
         
         return len(self.__goose_article__.cleaned_text) > 100
+    
+    
+    
+test_url = {
+    'amazon':'http://www.amazon.com/Cuisinart-CPT-122-Compact-2-Slice-Toaster/dp/B009GQ034C/ref=sr_1_1?s=kitchen&ie=UTF8&qid=1431620315&sr=1-1&keywords=toaster',
+    'blog':'http://blog.rei.com/camp/how-to-introduce-your-indoorsy-friend-to-the-outdoors/',
+    'cnn':'http://www.cnn.com/2013/06/10/politics/edward-snowden-profile/',
+    'goal':"http://www.goal.com/en/news/9/england/2015/09/11/15240922/im-scared-of-van-gaals-bulldog-face-admits-rojo?ICID=HP_HN_1",
+    'wiki':'https://en.wikipedia.org/wiki/Georgia_Institute_of_Technology_College_of_Computing',
+    'reddit':'https://www.reddit.com/r/Barca/',
+    'espn':'http://www.espnfc.us/club/atletico-madrid/1068/video/2605489/barca-look-to-continue-success-against-atleti',
+    'nyt':'http://www.nytimes.com/2015/09/11/world/netanyahu-makes-quick-pivot-from-loss-on-iran-deal.html'
+}    
