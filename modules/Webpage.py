@@ -75,7 +75,7 @@ class Webpage:
             
             markdown_text = h.handle(self.html.decode('utf8'))
             html_md = html = markdown(markdown_text)
-            self.text = ''.join(BeautifulSoup(html_md).findAll(text=True)).encode('ascii', 'ignore')
+            self.text = ''.join(BeautifulSoup(html_md,"lxml").findAll(text=True)).encode('ascii', 'ignore')
             
         else:
             self.text = self.__goose_article__.cleaned_text.encode('ascii', 'ignore')

@@ -21,13 +21,13 @@ def get_meta_info(w):
 
 
 def get_entities(text):
-    """ Return the top 22% entities sorted by frequency """
+    """ Return the top 25% entities sorted by frequency """
     tagged_entity_count = nlp.entity_count(text) 
     entity_count = {entity:tagged_entity_count[tag][entity]
                     for tag in tagged_entity_count
                         for entity in tagged_entity_count[tag] }
     return [entity 
-                for entity,count in sorted(entity_count.items(),key = lambda x:x[1], reverse = True)[:int(len(entity_count)/4.5)]
+                for entity,count in sorted(entity_count.items(),key = lambda x:x[1], reverse = True)[:int(len(entity_count)/4)]
             if count > 2 ]
 
 
@@ -52,6 +52,12 @@ def get_ngrams(text,k1=10,k2=5,k3=2):
 def validate(url):
     """ Check if it is a valid url or not"""
     pass
+
+
+def remove_duplicates(seq):
+    seen = set()
+    seen_add = seen.add
+    return [ x for x in seq if not (x in seen or seen_add(x))]
 
 
 def word_density_analyze(url):
@@ -88,6 +94,8 @@ def word_density_analyze(url):
     ngrams_used = False
     result.extend(title_nouns)
     
+    result.append('\n')
+    
     if len(keywords) <= 2:
         result.extend(keywords)
         keywords_used = True
@@ -98,28 +106,41 @@ def word_density_analyze(url):
         
     result.extend(entities)    
     
+    result.append('\n')
+    
     if len(keywords) > 5 or len(tags) > 3:
         result.extend(relevant_ngrams)
-        
+    
     if not keywords_used:
         result.extend(keywords)
     
     if not tags_used:
         result.extend(tags)
-        
+    
+    result.append('\n')
+    
     if not ngrams_used:
         result.extend(relevant_ngrams)
     
     
-    return result
+    return remove_duplicates(result)
 
 
+if __name__ == '__main__':
+    if sys.argv[1] != '-url':
+        raise ValueError('Invalid Command Line Arguments')
+    url = sys.argv[2]
+    print 'Entered URL is \n\t%s'%url
 
-results = word_density_analyze( "http://www.amazon.com/Cuisinart-CPT-122-Compact-2-Slice-Toaster/dp/B009GQ034C/ref=sr_1_1?s=kitchen&ie=UTF8&qid=1431620315&sr=1-1&keywords=toaster")
+    print '==='.join('='*20)
+    print 'Processing the webpage '
+    print '==='.join('='*20)
 
-print '==='.join('='*20)
-print 'The Results !!!'
-print '==='.join('='*20)
-
-print '\n'.join(results)
-
+    
+    results = word_density_analyze(url)
+    
+    print '==='.join('='*20)
+    print 'The Results '
+    print '==='.join('='*20)
+    
+    print '\n'.join(results)
