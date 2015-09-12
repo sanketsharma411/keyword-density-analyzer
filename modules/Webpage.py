@@ -1,4 +1,7 @@
 from goose import Goose
+import html2text
+from markdown import markdown
+from bs4 import BeautifulSoup
 
 class Webpage:
     """ The core Webpage Class 
@@ -68,7 +71,11 @@ class Webpage:
             # if it is not valid, we fall back to html2txt for extracting the main text
             h = html2text.HTML2Text()
             h.ignore_links = True
-            self.text = h.handle(self.html.decode('utf8'))
+            
+            markdown_text = h.handle(self.html.decode('utf8'))
+            html_md = html = markdown(markdown_text)
+            self.text = ''.join(BeautifulSoup(html_md).findAll(text=True))
+            
         else:
             self.text = self.__goose_article__.cleaned_text
             
