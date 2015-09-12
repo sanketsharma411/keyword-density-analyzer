@@ -2,6 +2,7 @@ from goose import Goose
 import html2text
 from markdown import markdown
 from bs4 import BeautifulSoup
+from warnings import warn
 
 class Webpage:
     """ The core Webpage Class 
@@ -77,7 +78,7 @@ class Webpage:
             self.text = ''.join(BeautifulSoup(html_md).findAll(text=True))
             
         else:
-            self.text = self.__goose_article__.cleaned_text
+            self.text = self.__goose_article__.cleaned_text.encode('ascii', 'ignore')
             
         # If you do not have anything into text now, we raise an error because we are not very sure about
         # the accuracy/performance of the parsing, so we raise a valueerror

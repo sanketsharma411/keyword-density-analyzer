@@ -2,6 +2,9 @@
 Natural Language proecssing module for Word density analyzer
 
 Based off of NLTK, Stanford NER Tagger
+
+Importing this module may take some time because it loads the NER Tagger
+from disk 
 """
 
 import nltk
@@ -12,8 +15,11 @@ def word_tokenize(text):
     Input : String
     Output: Iterable of words in the string
     
-    Method : Splits at white spaces
-    
+    Method : NLTK basic word_tokenize
+
+    The idea here is to have a single tokenizer function in our nlp module
+    and inside this function you can select/implement any tokenization scheme
+
     TODO : use better/other NLTK modules to for the task
     """
     return nltk.word_tokenize(text)
@@ -46,12 +52,18 @@ tagger_path = '../modules/stanford-ner-2014-06-16/classifiers/english.all.3class
 from  nltk.tag import StanfordNERTagger
 st = StanfordNERTagger(tagger_path,ner_tagger_jar)
 
-def NERTagger(text):
-    if type(text) is not list:
+def ner_tag(text):
+    """ Return the tokens and associated NER Tags
+    
+    input : tokens (strings are fine as well)
+    output: list of 2-tuples with first element being the token
+            and the second on the tag
+            
+    Note : This is quite slow a procedure yet quite accurate
+    """
+    if type(text) is str:
         text = word_tokenize(text)
     return st.tag(text)
-
-
 
 
 
@@ -92,8 +104,6 @@ def extract_entity_names(tree):
 
     return entity_names
 
-    
-    
 def pos_tag(text):
     """ Generate POS tags for the entered text
     
@@ -124,10 +134,11 @@ But stuff like ner_tagger,pos_tagger and others may not enjoy working with the p
 So the pre-processing we hence define would only be specific to use with ngrams
 '''
 
-def pre_process(text):
+def pre_process(text,word_length = 3):
     """ Clean and process the text 
     
     input : String
+        optional : word_length : Lower threshold on size of what is considered a valid word
     output: Tokenized and processed text
     
     Applies certain generic pre-processing steps to make the result more conducive for ngram analysis
@@ -140,6 +151,7 @@ def pre_process(text):
 
     #Convert to lower case
     text = text.lower()
+    
     # apostrophe
     text = text.replace("'",'') 
     
@@ -148,7 +160,6 @@ def pre_process(text):
     
     # keep word if it has an alphabet in it => Remove all numbers and punctuations
     text = re.sub("^[a-z]+$",' ',text)
-
 
     #Remove additional white spaces
     text = re.sub('[\s]+', ' ', text)
