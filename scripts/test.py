@@ -51,8 +51,7 @@ def get_ngrams(text,k1=10,k2=5,k3=2):
 
 def validate(url):
     """ Check if it is a valid url or not"""
-    if 'www' not in url or 'http://' not in url:
-        raise ValueError('Invalid URL, please stick to the following type: "http://www.example.com/"')
+    pass
 
 
 def remove_duplicates(seq):
@@ -95,7 +94,7 @@ def word_density_analyze(url):
     ngrams_used = False
     result.extend(title_nouns)
     
-    
+    result.append('\n')
     
     if len(keywords) <= 2:
         result.extend(keywords)
@@ -107,7 +106,7 @@ def word_density_analyze(url):
         
     result.extend(entities)    
     
-    
+    result.append('\n')
     
     if len(keywords) > 5 or len(tags) > 3:
         result.extend(relevant_ngrams)
@@ -118,7 +117,7 @@ def word_density_analyze(url):
     if not tags_used:
         result.extend(tags)
     
-    
+    result.append('\n')
     
     if not ngrams_used:
         result.extend(relevant_ngrams)
@@ -128,20 +127,18 @@ def word_density_analyze(url):
 
 
 if __name__ == '__main__':
-    if sys.argv[1] != '-url':
-        raise ValueError('Invalid Command Line Arguments')
-    url = sys.argv[2]
-    print 'Entered URL is \n\t%s'%url
+    
 
     print '==='.join('='*20)
     print 'Processing the webpage '
     print '==='.join('='*20)
 
     
-    results = word_density_analyze(url)
+    results = word_density_analyze('https://en.wikipedia.org/wiki/Georgia_Institute_of_Technology_College_of_Computing')
+    #results = word_density_analyze("http://www.cnn.com/2013/06/10/politics/edward-snowden-profile/")
     
     print '==='.join('='*20)
     print 'The Results '
     print '==='.join('='*20)
     
-    print '\n'.join(results[:25])
+    print '\n'.join(results)
