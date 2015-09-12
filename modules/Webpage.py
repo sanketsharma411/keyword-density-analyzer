@@ -65,7 +65,7 @@ class Webpage:
         self.title= self.__goose_article__.title.encode('ascii', 'ignore')
         self.tags = self.__goose_article__.tags
         self.meta_description = self.__goose_article__.meta_description.encode('ascii', 'ignore')
-        self.meta_keywords = self.__goose_article__.meta_keywords
+        self.meta_keywords = self.__goose_article__.meta_keywords.encode('ascii', 'ignore')
         
         # Now check if goose was able to extract the main content from the url correctly or not
         if not self._valid_text_():

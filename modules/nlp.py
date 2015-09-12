@@ -40,14 +40,15 @@ def sent_tokenize(text):
 
 import os
 java_path = "C:/Program Files/Java/jdk1.7.0_71/bin/java.exe"
+
 os.environ['JAVAHOME'] = java_path
 
 
 ## Downloaded the following modules from 
 # Download Stanford Named Entity Recognizer version 3.4 : http://nlp.stanford.edu/software/stanford-ner-2014-06-16.zip
 
-ner_tagger_jar = '../modules/stanford-ner-2014-06-16/stanford-ner.jar'
-tagger_path = '../modules/stanford-ner-2014-06-16/classifiers/english.all.3class.distsim.crf.ser.gz'
+ner_tagger_jar = 'modules/stanford-ner-2014-06-16/stanford-ner.jar'
+tagger_path = 'modules/stanford-ner-2014-06-16/classifiers/english.all.3class.distsim.crf.ser.gz'
 
 from  nltk.tag import StanfordNERTagger
 st = StanfordNERTagger(tagger_path,ner_tagger_jar)
