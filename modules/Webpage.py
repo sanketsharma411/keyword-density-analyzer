@@ -122,3 +122,18 @@ test_url = {
     'espn':'http://www.espnfc.us/club/atletico-madrid/1068/video/2605489/barca-look-to-continue-success-against-atleti',
     'nyt':'http://www.nytimes.com/2015/09/11/world/netanyahu-makes-quick-pivot-from-loss-on-iran-deal.html'
 }    
+
+'''
+Update 
+
+The text extracted by html2text is Markdown text, and it does a good job at getting rid of JS But adds crappy markdown
+
+Beautiful soup returns in text but is not very good with JS
+
+So
+
+```
+html --> [html2text] --> markdown --> [markdown] --> html --> [Beautiful Soup] --> text
+```
+
+'''
