@@ -110,7 +110,7 @@ def pos_tag(text):
     Input : tokens or string
     Output: List of tuples with first element the token and second one the POS tag
     """
-    if type(text) is str:
+    if type(text) is not list:
         text = word_tokenize(text)
     return nltk.pos_tag(text)    
 
@@ -380,3 +380,72 @@ def entity_count(text):
     tag_entity_count_dict = {tag:{token[0]:count for token,count in ngram_count(tag_dict[tag]).items()} for tag in tag_dict}
     
     return tag_entity_count_dict
+
+
+
+
+#################################################################
+### Part of Speech Tags (7_pos.ipynb)
+#################################################################
+
+
+def merge_pos_temp(temp_array):
+    """ Merge tokens from the temp array into one token_tag tuple """
+    merged_token = ' '.join(token_tag[0] for token_tag in temp_array)
+    return merged_token,'NNP'
+
+def merge_pos_tags(text_ner_tags):
+    """ Combine adjacent tokens with same NER tag into one token"""
+    
+    merged_ner_tags = []
+    temp_array = []
+    
+    for token_tag in text_ner_tags:
+        tag = token_tag[1]
+        
+        
+        if tag == 'NNP':
+            # This gonna go to the temp
+            temp_array.append(token_tag)
+            
+        elif tag in {'IN','-NONE-','CD'}: # continue
+            # See if there something in temp, 
+            if len(temp_array) != 0:
+                #    if yes add it to it
+                temp_array.append(token_tag)
+            else:
+                #    if no add this to result
+                merged_ner_tags.append(token_tag)
+        else: 
+            # Empty the temp
+            if len(temp_array) != 0:
+                merged_token,merged_tag = merge_pos_temp(temp_array)
+                merged_ner_tags.append((merged_token,merged_tag))
+                temp_array = []
+            
+            # add this to the result
+            merged_ner_tags.append(token_tag)
+        
+        #print token_tag,tag,temp_array,merged_ner_tags
+        
+    if len(temp_array) != 0:
+        merged_token,merged_tag = merge_pos_temp(temp_array)
+        merged_ner_tags.append((merged_token,merged_tag))
+    return merged_ner_tags
+
+def reduced_pos_tag(text):
+    """ Generate POS tags and combine proper nouns
+    
+    Input :  text
+    Output: List of token-tag tuples
+
+    Returns pos tags with combined Proper Nouns
+
+
+    Idea : The proper nouns present in the title are a very strong indicator of what is there in the text
+    But so are the other nouns,... Running out of time for adding support for all nouns
+    
+    """
+    text_pos_tags = pos_tag(text)
+    return merge_pos_tags(text_pos_tags)
+    

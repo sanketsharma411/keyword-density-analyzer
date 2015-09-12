@@ -62,9 +62,9 @@ class Webpage:
         self.__goose_article__ = g.extract(url = self.url)
         
         self.html = self.__goose_article__.raw_html
-        self.title= self.__goose_article__.title
+        self.title= self.__goose_article__.title.encode('ascii', 'ignore')
         self.tags = self.__goose_article__.tags
-        self.meta_description = self.__goose_article__.meta_description
+        self.meta_description = self.__goose_article__.meta_description.encode('ascii', 'ignore')
         self.meta_keywords = self.__goose_article__.meta_keywords
         
         # Now check if goose was able to extract the main content from the url correctly or not
