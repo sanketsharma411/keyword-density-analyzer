@@ -135,7 +135,7 @@ So the pre-processing we hence define would only be specific to use with ngrams
 '''
 
 def pre_process(text,word_length = 3):
-    """ Clean and process the text 
+    """ Clean and tokenize the text 
     
     input : String
         optional : word_length : Lower threshold on size of what is considered a valid word
@@ -206,7 +206,26 @@ def sorted_ngram_count(tokens,n=1):
     """
     return sorted(ngram_count(tokens,n).items(),key=lambda x:x[1], reverse = True)
 
+# Complete ngram pipeline
+def ngram(text,lower_count_threshold = 1):
+    """ Computes ngram counts upto n = 3
+    
+    Input : string text
+    output: Tuple  of unigrams,bigrams,trigrams 
+            where each element is a dictionary  as follows:
+                keys = n of n-gram
+                vals = list of 2-tuples
+                            first element = token n-gram
+                            second element= count
+    Rare n-grams which appear <= lower_count_threshold (= 1) times are disregarded 
 
+    """
+    tokens = pre_process(text)
+    unigrams = {unigram:count for unigram,count in ngram_count(tokens).items() if count > lower_count_threshold}
+    bigrams  = {bigram:count for bigram,count in ngram_count(tokens,2).items() if count > lower_count_threshold}
+    trigrams = {trigram:count for trigram,count in ngram_count(tokens,3).items() if count > lower_count_threshold}
+
+    return unigrams,bigrams,trigrams
 
 ################################################################################
 ### NER
