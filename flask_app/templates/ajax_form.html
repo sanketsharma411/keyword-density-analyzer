@@ -1,0 +1,61 @@
+<html>
+   <head>
+      <title>The jQuery Example</title>
+      <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+		
+      <script type="text/javascript" language="javascript">
+         $(document).ready(function() {
+            
+            $("#driver").click(function(event){
+                $("#wait").attr('src','/static/loading.gif').attr('height','40').attr('width','40');
+               $.get( 
+                  "/w/submit/",
+                  
+                  
+                  
+                  $("#testform").serialize(),
+						
+                  function(data) {
+                     $('#stage1').html(data);
+                     $("#wait").hide();
+                  }
+						
+               );
+					
+               var str = $("#testform").serialize();
+               $("#stage2").text(str);
+            });
+				
+         });
+      </script>
+		
+   </head>
+	
+   <body>
+	
+      
+	    
+      <form id="testform">
+         <table>
+			
+            <tr>
+               <td><p>url:</p></td>
+               <td><input type="text" name="url" size="40" /></td>
+        
+		
+               <td colspan="2">
+                  <input type="button" id="driver" value="Load Data" />
+               </td>
+            </tr>
+				
+         </table>
+			
+      </form>
+    <div id="stage1">Something</div>
+      <br />
+
+      <img id="wait" >
+      
+   </body>
+	
+</html>

@@ -3,8 +3,6 @@ sys.path.append('modules/')
 from webpage import *
 import nlp
 
-
-
 def get_meta_info(w):
     """ Extract relevant information from the website metadata"""
     
@@ -20,14 +18,14 @@ def get_meta_info(w):
     return title_nouns,keywords,tags
 
 
-def get_entities(text):
+def get_entities(text,k = 1):
     """ Return the top 25% entities sorted by frequency """
     tagged_entity_count = nlp.entity_count(text) 
     entity_count = {entity:tagged_entity_count[tag][entity]
                     for tag in tagged_entity_count
                         for entity in tagged_entity_count[tag] }
     return [entity 
-                for entity,count in sorted(entity_count.items(),key = lambda x:x[1], reverse = True)[:int(len(entity_count)/4)]
+                for entity,count in sorted(entity_count.items(),key = lambda x:x[1], reverse = True)[:int(len(entity_count)/k)]
             if count > 2 ]
 
 
@@ -51,7 +49,8 @@ def get_ngrams(text,k1=10,k2=5,k3=2):
 
 def validate(url):
     """ Check if it is a valid url or not"""
-    pass
+    if 'www' not in url or 'http://' not in url:
+        raise ValueError('Invalid URL, please stick to the following type: "http://www.example.com/"')
 
 
 def remove_duplicates(seq):
@@ -64,7 +63,7 @@ def word_density_analyze(url):
     """ List of topics that describe the page """
     
     
-    validate(url)
+    #validate(url)
     w = Webpage(url)
     print "Loading the WebPage"
     w.load()
@@ -86,7 +85,7 @@ def word_density_analyze(url):
     relevant_ngrams = get_ngrams(w.text)
     print "Extracting ngram counts (this should be faster than Entities) !! COMPLETED !!"
     
-    
+
     print 'Generating Result'
     result = []
     keywords_used = False
@@ -94,7 +93,7 @@ def word_density_analyze(url):
     ngrams_used = False
     result.extend(title_nouns)
     
-    result.append('\n')
+    
     
     if len(keywords) <= 2:
         result.extend(keywords)
@@ -106,7 +105,7 @@ def word_density_analyze(url):
         
     result.extend(entities)    
     
-    result.append('\n')
+    
     
     if len(keywords) > 5 or len(tags) > 3:
         result.extend(relevant_ngrams)
@@ -117,7 +116,7 @@ def word_density_analyze(url):
     if not tags_used:
         result.extend(tags)
     
-    result.append('\n')
+    
     
     if not ngrams_used:
         result.extend(relevant_ngrams)
@@ -126,19 +125,3 @@ def word_density_analyze(url):
     return remove_duplicates(result)
 
 
-if __name__ == '__main__':
-    
-    print 'Entered URL is \n\t%s'%url
-
-    print '==='.join('='*20)
-    print 'Processing the webpage '
-    print '==='.join('='*20)
-
-    
-    results = word_density_analyze('https://en.wikipedia.org/wiki/Georgia_Institute_of_Technology_College_of_Computing')
-    
-    print '==='.join('='*20)
-    print 'The Results '
-    print '==='.join('='*20)
-    
-    print '\n'.join(results)
