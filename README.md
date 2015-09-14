@@ -1,4 +1,15 @@
-# word-density-analyzer
+# keyword-density-analyzer
+
+Analyze contents of a url and return representative keywords best describing the page
+
+Currently it performs the following  :
+
+1. Named entity recognition using NLTK-StanfordNER to identify all the entities present on the page.
+2. Part of Speech Tagging using NLTK to identify the proper nouns in the title, meta_description.
+3. N-gram count. 
+
+These results can be obtained separately or together in the form of a single summary of the page (in the second case you would also need to decide on how to rank the results)
+
 
 ## Setup
 1. Extract everything to a folder named word-density-analyzer referred to as <root>
@@ -14,7 +25,7 @@
     ```
         python .\scripts\test.py
     ```
-    If it shows Some details about College of computing at GaTech, then the setup has been succesful
+    If it shows Some details about the College of Computing, then the setup has been succesful !
 
 8. Now try your own url  with the -url flag
     ```
@@ -91,7 +102,3 @@ privacy
 liberty
 cnnpolitics
 ```
-
-
-
-For details on how I built the solution see methodology.md
