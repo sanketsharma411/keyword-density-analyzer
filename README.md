@@ -14,8 +14,8 @@ These results can be obtained separately or together in the form of a single sum
 ## Setup
 1. Extract everything to a folder named word-density-analyzer referred to as <root>
 2. Install Java
-3. In <root>/modules/nlp.py Line 42: Put the path to java executable
-4. Navigate to <root> 
+3. In ```<root>/modules/nlp.py``` Line 42: Put the path to java executable
+4. Navigate to ```<root> ```
 5. Install Python 2.xx
 6. Install python requirements as 
     ``` 
