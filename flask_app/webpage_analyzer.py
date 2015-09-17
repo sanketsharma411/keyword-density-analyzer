@@ -8,7 +8,7 @@ from modules.word_density_analyze import  *
 
 @app.route('/w/')
 def webpage_analyze_index():
-    return render_template('ajax_form.html')
+    return render_template('index.html')
     
     
     
